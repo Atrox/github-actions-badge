@@ -1,0 +1,12 @@
+# This is an example with only required properties:
+version: 1
+update_configs:
+  # go modules
+  - package_manager: 'go:modules'
+    directory: '/'
+    update_schedule: 'daily'
+
+  # docker
+  - package_manager: 'docker'
+    directory: '/'
+    update_schedule: 'daily'
