@@ -48,6 +48,8 @@ func main() {
 	})
 
 	r.Route("/{owner}/{repo}", func(r chi.Router) {
+		r.Use(getCheck)
+
 		r.Get("/badge", badgeRoute)
 		r.Get("/goto", gotoRoute)
 	})
@@ -57,31 +59,40 @@ func main() {
 	}
 }
 
+func getCheck(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		owner := chi.URLParamFromCtx(ctx, "owner")
+		repo := chi.URLParamFromCtx(ctx, "repo")
+
+		ref := r.URL.Query().Get("ref")
+		if ref == "" {
+			ref = "master"
+		}
+
+		checks, _, err := client.Checks.ListCheckSuitesForRef(ctx, owner, repo, ref, &github.ListCheckSuiteOptions{
+			AppID: github.Int(15368),
+		})
+		if err != nil {
+			sendJSONResponse(w, err)
+			return
+		}
+
+		check := getRelevantCheckSuite(checks.CheckSuites)
+		if check == nil {
+			sendJSONResponse(w, errors.New("no check found"))
+			return
+		}
+
+		ctx = context.WithValue(ctx, "check", check)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func badgeRoute(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
-	owner := chi.URLParamFromCtx(ctx, "owner")
-	repo := chi.URLParamFromCtx(ctx, "repo")
-
-	ref := r.URL.Query().Get("ref")
-	if ref == "" {
-		ref = "master"
-	}
-
-	checks, _, err := client.Checks.ListCheckSuitesForRef(ctx, owner, repo, ref, &github.ListCheckSuiteOptions{
-		AppID: github.Int(15368),
-	})
-	if err != nil {
-		sendJSONResponse(w, err)
-		return
-	}
-
-	check := getRelevantCheckSuite(checks.CheckSuites)
-	if check == nil {
-		sendJSONResponse(w, errors.New("no check found"))
-		return
-	}
-
+	check := ctx.Value("check").(*github.CheckSuite)
 	endpoint := NewEndpoint()
 
 	status := check.GetStatus()
@@ -126,28 +137,10 @@ func badgeRoute(w http.ResponseWriter, r *http.Request) {
 
 func gotoRoute(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	check := ctx.Value("check").(*github.CheckSuite)
 
 	owner := chi.URLParamFromCtx(ctx, "owner")
 	repo := chi.URLParamFromCtx(ctx, "repo")
-
-	ref := r.URL.Query().Get("ref")
-	if ref == "" {
-		ref = "master"
-	}
-
-	checks, _, err := client.Checks.ListCheckSuitesForRef(ctx, owner, repo, ref, &github.ListCheckSuiteOptions{
-		AppID: github.Int(15368),
-	})
-	if err != nil {
-		sendJSONResponse(w, err)
-		return
-	}
-
-	check := getRelevantCheckSuite(checks.CheckSuites)
-	if check == nil {
-		sendJSONResponse(w, errors.New("no check found"))
-		return
-	}
 
 	runs, _, err := client.Checks.ListCheckRunsCheckSuite(ctx, owner, repo, check.GetID(), &github.ListCheckRunsOptions{})
 	if err != nil {
@@ -163,8 +156,9 @@ func gotoRoute(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, runs.CheckRuns[runs.GetTotal()-1].GetHTMLURL(), http.StatusFound)
 }
 
-func getRelevantCheckSuite(checks []*github.CheckSuite) *github.CheckSuite {
-	var endCheck *github.CheckSuite
+// getRelevantCheckSuite returns the most relevant check suite
+func getRelevantCheckSuite(checks []*github.CheckSuite) (finalCheck *github.CheckSuite) {
+	// var endCheck *github.CheckSuite
 
 	for _, check := range checks {
 		status := check.GetStatus()
@@ -184,12 +178,12 @@ func getRelevantCheckSuite(checks []*github.CheckSuite) *github.CheckSuite {
 
 		switch conclusion {
 		case "success":
-			endCheck = check
+			finalCheck = check
 		case "failure":
 			return check
 		case "neutral":
-			if endCheck == nil || endCheck.GetConclusion() != "success" {
-				endCheck = check
+			if finalCheck == nil || finalCheck.GetConclusion() != "success" {
+				finalCheck = check
 			}
 		case "cancelled":
 			return check
@@ -202,5 +196,5 @@ func getRelevantCheckSuite(checks []*github.CheckSuite) *github.CheckSuite {
 		}
 	}
 
-	return endCheck
+	return
 }
