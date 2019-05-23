@@ -2,8 +2,13 @@
 
 There is a public version of this deployed and free to use at [https://actions-badge.atrox.dev](https://actions-badge.atrox.dev).
 
+## Your own
+
+You can build your own badge in the playground [available here](https://actions-badge.atrox.dev).
+
 ## Routes
 
+- `/`: playground
 - `/<user>/<repo>/badge`: returns the [endpoint](https://shields.io/endpoint) for shields.io
 - `/<user>/<repo>/goto`: redirects to the action
 
