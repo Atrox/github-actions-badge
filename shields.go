@@ -13,7 +13,7 @@ type Endpoint struct {
 	LogoWidth     int    `json:"logoWidth,omitempty"`
 	LogoPosition  string `json:"logoPosition,omitempty"`
 	Style         string `json:"style,omitempty"`
-	CacheSeconds  int    `json:"cache_seconds,omitempty"`
+	CacheSeconds  int    `json:"cacheSeconds,omitempty"`
 }
 
 func NewEndpoint() *Endpoint {
