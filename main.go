@@ -43,8 +43,13 @@ func main() {
 	r.Use(middleware.NewCompressor(flate.DefaultCompression).Handler())
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: create playground to dynamically create the badges
-		http.Redirect(w, r, "https://atrox.dev", http.StatusFound)
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+
+		_, err := fmt.Fprint(w, playgroundHTML)
+		if err != nil {
+			sendJSONResponse(w, err)
+		}
 	})
 
 	r.Route("/{owner}/{repo}", func(r chi.Router) {
