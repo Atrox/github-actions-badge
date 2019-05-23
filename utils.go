@@ -31,3 +31,14 @@ func sendJSONResponse(w http.ResponseWriter, err error) {
 
 	_ = json.NewEncoder(w).Encode(resp)
 }
+
+func sendEndpointResponse(w http.ResponseWriter, endpoint *Endpoint) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	err := json.NewEncoder(w).Encode(endpoint)
+	if err != nil {
+		sendJSONResponse(w, err)
+		return
+	}
+}

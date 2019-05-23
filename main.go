@@ -2,7 +2,7 @@ package main
 
 import (
 	"compress/flate"
-	"encoding/json"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,11 +13,22 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/google/go-github/v25/github"
 	"github.com/pkg/errors"
+	"golang.org/x/oauth2"
 )
 
-var (
-	client = github.NewClient(nil)
-)
+var client *github.Client
+
+func init() {
+	githubToken := env.Get("GITHUB_TOKEN")
+	if githubToken == "" {
+		client = github.NewClient(nil)
+		return
+	}
+
+	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubToken})
+	tc := oauth2.NewClient(context.Background(), ts)
+	client = github.NewClient(tc)
+}
 
 func main() {
 	r := chi.NewRouter()
@@ -110,17 +121,6 @@ func badgeRoute(w http.ResponseWriter, r *http.Request) {
 		endpoint.ServerError()
 	}
 	sendEndpointResponse(w, endpoint)
-}
-
-func sendEndpointResponse(w http.ResponseWriter, endpoint *Endpoint) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	err := json.NewEncoder(w).Encode(endpoint)
-	if err != nil {
-		sendJSONResponse(w, err)
-		return
-	}
 }
 
 func gotoRoute(w http.ResponseWriter, r *http.Request) {
