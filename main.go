@@ -81,7 +81,9 @@ func getCheck(next http.Handler) http.Handler {
 
 		check := getRelevantCheckSuite(checks.CheckSuites)
 		if check == nil {
-			sendJSONResponse(w, errors.New("no check found"))
+			endpoint := NewEndpoint()
+			endpoint.NoRuns()
+			sendEndpointResponse(w, endpoint)
 			return
 		}
 

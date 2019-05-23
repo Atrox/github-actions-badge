@@ -71,3 +71,9 @@ func (e *Endpoint) ServerError() {
 	e.Message = "server error"
 	e.IsError = true
 }
+
+func (e *Endpoint) NoRuns() {
+	e.Color = "inactive"
+	e.Message = "no runs"
+	e.IsError = true
+}
