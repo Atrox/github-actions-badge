@@ -23,12 +23,11 @@ func init() {
 	githubToken := env.Get("GITHUB_TOKEN")
 	if githubToken == "" {
 		client = github.NewClient(nil)
-		return
+	} else {
+		ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubToken})
+		tc := oauth2.NewClient(context.Background(), ts)
+		client = github.NewClient(tc)
 	}
-
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubToken})
-	tc := oauth2.NewClient(context.Background(), ts)
-	client = github.NewClient(tc)
 
 	// capture errors in production
 	if env.IsProduction() {
@@ -89,6 +88,15 @@ func getCheck(next http.Handler) http.Handler {
 			AppID: github.Int(15368),
 		})
 		if err != nil {
+			if githubError, ok := err.(*github.ErrorResponse); ok {
+				if githubError.Response.StatusCode == http.StatusNotFound {
+					endpoint := NewEndpoint()
+					endpoint.RepositoryNotFound()
+					sendEndpointResponse(w, r, endpoint)
+					return
+				}
+			}
+
 			sendJSONResponse(w, r, err)
 			return
 		}
@@ -174,8 +182,6 @@ func gotoRoute(w http.ResponseWriter, r *http.Request) {
 
 // getRelevantCheckSuite returns the most relevant check suite
 func getRelevantCheckSuite(checks []*github.CheckSuite) (finalCheck *github.CheckSuite) {
-	// var endCheck *github.CheckSuite
-
 	for _, check := range checks {
 		status := check.GetStatus()
 		switch status {
@@ -211,6 +217,5 @@ func getRelevantCheckSuite(checks []*github.CheckSuite) (finalCheck *github.Chec
 			return check
 		}
 	}
-
 	return
 }

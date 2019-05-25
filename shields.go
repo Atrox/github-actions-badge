@@ -77,3 +77,9 @@ func (e *Endpoint) NoRuns() {
 	e.Message = "no runs"
 	e.IsError = true
 }
+
+func (e *Endpoint) RepositoryNotFound() {
+	e.Color = "critical"
+	e.Message = "repository not found"
+	e.IsError = true
+}
