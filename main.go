@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/atrox/env"
+	raven "github.com/getsentry/raven-go"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/google/go-github/v25/github"
@@ -28,6 +29,14 @@ func init() {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubToken})
 	tc := oauth2.NewClient(context.Background(), ts)
 	client = github.NewClient(tc)
+
+	// capture errors in production
+	if env.IsProduction() {
+		err := raven.SetDSN(env.Get("SENTRY_DSN"))
+		if err != nil {
+			log.Fatalf("raven could not be initialized: %s", err.Error())
+		}
+	}
 }
 
 func main() {
@@ -48,7 +57,7 @@ func main() {
 
 		_, err := fmt.Fprint(w, playgroundHTML)
 		if err != nil {
-			sendJSONResponse(w, err)
+			sendJSONResponse(w, r, err)
 		}
 	})
 
@@ -80,7 +89,7 @@ func getCheck(next http.Handler) http.Handler {
 			AppID: github.Int(15368),
 		})
 		if err != nil {
-			sendJSONResponse(w, err)
+			sendJSONResponse(w, r, err)
 			return
 		}
 
@@ -88,7 +97,7 @@ func getCheck(next http.Handler) http.Handler {
 		if check == nil {
 			endpoint := NewEndpoint()
 			endpoint.NoRuns()
-			sendEndpointResponse(w, endpoint)
+			sendEndpointResponse(w, r, endpoint)
 			return
 		}
 
@@ -106,20 +115,20 @@ func badgeRoute(w http.ResponseWriter, r *http.Request) {
 	switch status {
 	case "queued", "in_progress":
 		endpoint.Pending()
-		sendEndpointResponse(w, endpoint)
+		sendEndpointResponse(w, r, endpoint)
 		return
 	case "completed":
 		// continue
 	default:
 		endpoint.ServerError()
-		sendEndpointResponse(w, endpoint)
+		sendEndpointResponse(w, r, endpoint)
 		return
 	}
 
 	conclusion := check.GetConclusion()
 	if conclusion == "" {
 		endpoint.ServerError()
-		sendEndpointResponse(w, endpoint)
+		sendEndpointResponse(w, r, endpoint)
 		return
 	}
 
@@ -139,7 +148,7 @@ func badgeRoute(w http.ResponseWriter, r *http.Request) {
 	default:
 		endpoint.ServerError()
 	}
-	sendEndpointResponse(w, endpoint)
+	sendEndpointResponse(w, r, endpoint)
 }
 
 func gotoRoute(w http.ResponseWriter, r *http.Request) {
@@ -151,12 +160,12 @@ func gotoRoute(w http.ResponseWriter, r *http.Request) {
 
 	runs, _, err := client.Checks.ListCheckRunsCheckSuite(ctx, owner, repo, check.GetID(), &github.ListCheckRunsOptions{})
 	if err != nil {
-		sendJSONResponse(w, err)
+		sendJSONResponse(w, r, err)
 		return
 	}
 
 	if len(runs.CheckRuns) <= 0 {
-		sendJSONResponse(w, errors.New("no check runs found"))
+		sendJSONResponse(w, r, errors.New("no check runs found"))
 		return
 	}
 
