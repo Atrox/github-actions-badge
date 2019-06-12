@@ -17,6 +17,8 @@ github.com/google/go-github/v25 v25.1.1 h1:6eW++i/CXcR5GKfYaaJT7oJJtHNU+/iiw55no
 github.com/google/go-github/v25 v25.1.1/go.mod h1:6z5pC69qHtrPJ0sXPsj4BLnd82b+r6sLB7qcBoRZqpw=
 github.com/google/go-github/v25 v25.1.2 h1:5v/e8fmy6MvbcHuud8BT754T6MsM5RKYJMiRDyC4Wg0=
 github.com/google/go-github/v25 v25.1.2/go.mod h1:6z5pC69qHtrPJ0sXPsj4BLnd82b+r6sLB7qcBoRZqpw=
+github.com/google/go-github/v25 v25.1.3 h1:Ht4YIQgUh4l4lc80fvGnw60khXysXvlgPxPP8uJG3EA=
+github.com/google/go-github/v25 v25.1.3/go.mod h1:6z5pC69qHtrPJ0sXPsj4BLnd82b+r6sLB7qcBoRZqpw=
 github.com/google/go-querystring v1.0.0 h1:Xkwi/a1rcvNg1PPYe5vI8GbeBY/jrVuDX5ASuANWTrk=
 github.com/google/go-querystring v1.0.0/go.mod h1:odCYkC5MyYFN7vkCjXpyrEuKhc/BUO6wN/zVPAxq5ck=
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
