@@ -1,9 +1,12 @@
 steps:
   # build the container image
-  - name: 'gcr.io/kaniko-project/executor:latest'
-    args:
-      - --destination=gcr.io/$PROJECT_ID/$_APP_NAME
-      - --cache=true
-    # Deploy container image to Cloud Run
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/$_APP_NAME', '.']
+  # push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/$_APP_NAME']
+  # deploy container image to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['beta', 'run', 'deploy', '$_APP_NAME', '--image', 'gcr.io/$PROJECT_ID/$_APP_NAME', '--region', 'us-central1']
+    args: ['beta', 'run', 'deploy', '$_APP_NAME', '--image', 'gcr.io/$PROJECT_ID/$_APP_NAME', '--region', 'us-central1', '--quiet']
+images:
+  - gcr.io/$PROJECT_ID/$_APP_NAME
