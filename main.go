@@ -12,7 +12,7 @@ import (
 	raven "github.com/getsentry/raven-go"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/google/go-github/v25/github"
+	"github.com/google/go-github/v28/github"
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 )
