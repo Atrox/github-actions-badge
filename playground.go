@@ -27,13 +27,24 @@ const playgroundHTML = `
         <div class="columns">
             <div class="column is-half is-offset-one-quarter">
                 <div id="app">
-                    <div class="field">
-                        <label class="label">Repository</label>
-                        <div class="control">
-                            <input class="input" type="text" placeholder="atrox/sync-dotenv" v-model="repository">
-                        </div>
-                    </div>
 
+					<div class="field-body">
+						<div class="field">
+							<label class="label">Repository</label>
+							<div class="control">
+								<input class="input" type="text" placeholder="atrox/sync-dotenv" v-model="repository">
+							</div>
+						</div>
+
+						<div class="field">
+							<label class="label">Branch</label>
+							<div class="control">
+								<input class="input" type="text" placeholder="master" v-model="ref">
+							</div>
+						</div>
+					</div>
+
+					
                     <div class="field">
                         <label class="label">Style</label>
                         <div class="control">
@@ -104,12 +115,15 @@ const playgroundHTML = `
     data: {
       repository: '',
       style: 'flat',
+	  ref: '',
     },
     computed: {
       badgeURL: function () {
         var repo = this.repository || 'atrox/sync-dotenv'
         var style = this.style || ''
-        var url = encodeURIComponent('https://actions-badge.atrox.dev/' + repo + '/badge')
+        
+        var ref = this.ref ? '?ref=' + this.ref : ''
+        var url = encodeURIComponent('https://actions-badge.atrox.dev/' + repo + '/badge' + ref)
 
         return 'https://img.shields.io/endpoint.svg?url=' + url + '&style=' + style
       },
