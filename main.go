@@ -194,24 +194,14 @@ func getRelevantCheckSuite(checks []*github.CheckSuite) (finalCheck *github.Chec
 		}
 
 		conclusion := check.GetConclusion()
-		if conclusion == "" {
-			return check
-		}
-
 		switch conclusion {
 		case "success":
 			finalCheck = check
-		case "failure":
-			return check
 		case "neutral":
 			if finalCheck == nil || finalCheck.GetConclusion() != "success" {
 				finalCheck = check
 			}
-		case "cancelled":
-			return check
-		case "timed_out":
-			return check
-		case "action_required":
+		case "failure", "cancelled", "timed_out", "action_required":
 			return check
 		default:
 			return check

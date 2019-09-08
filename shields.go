@@ -1,5 +1,8 @@
 package main
 
+// Endpoint specifies the shields.io expected endpoint response
+//
+// Documentation: https://shields.io/endpoint
 type Endpoint struct {
 	SchemaVersion int    `json:"schemaVersion,omitempty"`
 	Label         string `json:"label,omitempty"`
@@ -16,6 +19,7 @@ type Endpoint struct {
 	CacheSeconds  int    `json:"cacheSeconds,omitempty"`
 }
 
+// NewEndpoint instantiates a new endpoint instance with default values
 func NewEndpoint() *Endpoint {
 	return &Endpoint{
 		SchemaVersion: 1,
