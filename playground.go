@@ -129,7 +129,9 @@ const playgroundHTML = `
       },
       gotoURL: function () {
         var repo = this.repository || 'atrox/sync-dotenv'
-        return 'https://actions-badge.atrox.dev/' + repo + '/goto'
+        var ref = this.ref ? '?ref=' + this.ref : ''
+
+        return 'https://actions-badge.atrox.dev/' + repo + '/goto' + ref
       },
       markdownSource: function () {
         return '[![Build Status](' + this.badgeURL + ')](' + this.gotoURL + ')'
