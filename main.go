@@ -17,16 +17,16 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var client *github.Client
+var defaultGithubClient *github.Client
 
 func init() {
 	githubToken := env.Get("GITHUB_TOKEN")
 	if githubToken == "" {
-		client = github.NewClient(nil)
+		defaultGithubClient = github.NewClient(nil)
 	} else {
 		ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubToken})
 		tc := oauth2.NewClient(context.Background(), ts)
-		client = github.NewClient(tc)
+		defaultGithubClient = github.NewClient(tc)
 	}
 
 	// capture errors in production
@@ -83,6 +83,17 @@ func getCheck(next http.Handler) http.Handler {
 		if ref == "" {
 			ref = "master"
 		}
+
+		var client *github.Client
+		token := r.URL.Query().Get("token")
+		if token != "" {
+			ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
+			tc := oauth2.NewClient(ctx, ts)
+			client = github.NewClient(tc)
+		} else {
+			client = defaultGithubClient
+		}
+		ctx = context.WithValue(ctx, "client", client)
 
 		checks, _, err := client.Checks.ListCheckSuitesForRef(ctx, owner, repo, ref, &github.ListCheckSuiteOptions{
 			AppID: github.Int(15368),
@@ -162,6 +173,7 @@ func badgeRoute(w http.ResponseWriter, r *http.Request) {
 func gotoRoute(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	check := ctx.Value("check").(*github.CheckSuite)
+	client := ctx.Value("client").(*github.Client)
 
 	owner := chi.URLParamFromCtx(ctx, "owner")
 	repo := chi.URLParamFromCtx(ctx, "repo")
