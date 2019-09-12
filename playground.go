@@ -61,6 +61,22 @@ const playgroundHTML = `
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="privateRepo">
+                                Private Repository?
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field" v-if="privateRepo">
+                        <label class="label">Github Token</label>
+                        <div class="control">
+                            <input class="input" type="text" placeholder="GitHub Access Token" v-model="token">
+                        </div>
+                    </div>
 
                     <div class="card has-text-centered">
                         <div class="card-content">
@@ -116,22 +132,22 @@ const playgroundHTML = `
       repository: '',
       style: 'flat',
 	  ref: '',
+      privateRepo: false,
+      token: ''
     },
     computed: {
       badgeURL: function () {
         var repo = this.repository || 'atrox/sync-dotenv'
         var style = this.style || ''
-        
-        var ref = this.ref ? '?ref=' + this.ref : ''
-        var url = encodeURIComponent('https://actions-badge.atrox.dev/' + repo + '/badge' + ref)
+
+        var url = encodeURIComponent('https://actions-badge.atrox.dev/' + repo + '/badge' + this.params())
 
         return 'https://img.shields.io/endpoint.svg?url=' + url + '&style=' + style
       },
       gotoURL: function () {
         var repo = this.repository || 'atrox/sync-dotenv'
-        var ref = this.ref ? '?ref=' + this.ref : ''
 
-        return 'https://actions-badge.atrox.dev/' + repo + '/goto' + ref
+        return 'https://actions-badge.atrox.dev/' + repo + '/goto' + this.params()
       },
       markdownSource: function () {
         return '[![Build Status](' + this.badgeURL + ')](' + this.gotoURL + ')'
@@ -152,6 +168,17 @@ const playgroundHTML = `
           alert('Oops, unable to copy')
         }
       },
+      params () {
+        var params = new URLSearchParams()
+        
+        if (this.ref) params.append('ref', this.ref)
+        if (this.privateRepo && this.token) params.append('token', this.token)
+        
+        var paramsString = params.toString()
+        if (!paramsString) return ''
+        
+        return '?' + paramsString
+      }
     }
   })
 </script>
