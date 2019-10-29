@@ -72,7 +72,7 @@ const playgroundHTML = `
                     </div>
 
                     <div class="field" v-if="privateRepo">
-                        <label class="label">Github Token</label>
+                        <label class="label">Github Token (<a v-on:click="openNewTokenPage">create</a>)</label>
                         <div class="control">
                             <input class="input" type="text" placeholder="GitHub Access Token" v-model="token">
                         </div>
@@ -178,6 +178,10 @@ const playgroundHTML = `
         if (!paramsString) return ''
         
         return '?' + paramsString
+      },
+      openNewTokenPage () {
+        var url = 'https://github.com/settings/tokens/new?scopes=repo&description=actions-badge.atrox.dev+-+' + new Date().toISOString()
+        window.open(url, '_blank').focus()
       }
     }
   })
