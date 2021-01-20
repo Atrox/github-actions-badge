@@ -1,5 +1,5 @@
 # build binary
-FROM golang:1.15.2 AS builder
+FROM golang:1.15.7 AS builder
 WORKDIR /app
 
 # populate the module cache based on the go.{mod,sum} files.
