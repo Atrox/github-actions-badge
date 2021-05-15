@@ -43,19 +43,16 @@ func (e *Endpoint) Neutral() {
 func (e *Endpoint) Pending() {
 	e.Color = "yellow"
 	e.Message = "pending"
-	e.IsError = true
 }
 
 func (e *Endpoint) Failure() {
 	e.Color = "critical"
 	e.Message = "failure"
-	e.IsError = true
 }
 
 func (e *Endpoint) Cancelled() {
 	e.Color = "inactive"
 	e.Message = "cancelled"
-	e.IsError = true
 }
 
 func (e *Endpoint) TimedOut() {
