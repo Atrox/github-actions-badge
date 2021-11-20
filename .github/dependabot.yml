@@ -1,16 +1,15 @@
 version: 2
 updates:
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "12:00"
+      timezone: Etc/UTC
 
-- package-ecosystem: gomod
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "12:00"
-    timezone: Etc/UTC
-
-- package-ecosystem: docker
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "12:00"
-    timezone: Etc/UTC
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "12:00"
+      timezone: Etc/UTC
