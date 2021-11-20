@@ -13,7 +13,7 @@ RUN make docker-binary
 
 
 # run image
-FROM alpine:3.13.5
+FROM alpine:3.14.3
 
 # ca-certificates
 RUN apk add --no-cache ca-certificates
