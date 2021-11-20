@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/atrox/env"
 	raven "github.com/getsentry/raven-go"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/google/go-github/v32/github"
 	"github.com/pkg/errors"
+	"go.atrox.dev/env"
 	"golang.org/x/oauth2"
 )
 
