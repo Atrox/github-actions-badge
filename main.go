@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"time"
 
-	raven "github.com/getsentry/raven-go"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/google/go-github/v32/github"
+	"github.com/getsentry/sentry-go"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/go-github/v44/github"
 	"github.com/pkg/errors"
 	"go.atrox.dev/env"
 	"golang.org/x/oauth2"
@@ -31,9 +31,16 @@ func init() {
 
 	// capture errors in production
 	if env.IsProduction() {
-		err := raven.SetDSN(env.Get("SENTRY_DSN"))
+		// use the sentry sync transport to ensure events getting sent in cloud run environment
+		sentrySyncTransport := sentry.NewHTTPSyncTransport()
+		sentrySyncTransport.Timeout = time.Second * 3
+
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn:       env.Get("SENTRY_DSN"),
+			Transport: sentrySyncTransport,
+		})
 		if err != nil {
-			log.Fatalf("raven could not be initialized: %s", err.Error())
+			log.Printf("WARN: raven could not be initialized: %s\n", err.Error())
 		}
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	raven "github.com/getsentry/raven-go"
+	"github.com/getsentry/sentry-go"
 )
 
 type response struct {
@@ -25,7 +25,7 @@ func sendJSONResponse(w http.ResponseWriter, r *http.Request, err error) {
 		resp.Success = false
 		resp.Message = err.Error()
 
-		raven.CaptureErrorAndWait(err, nil, raven.NewHttp(r))
+		sentry.CaptureException(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
