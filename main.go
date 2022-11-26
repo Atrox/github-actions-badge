@@ -11,7 +11,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/google/go-github/v44/github"
+	"github.com/google/go-github/v48/github"
 	"github.com/pkg/errors"
 	"go.atrox.dev/env"
 	"golang.org/x/oauth2"
