@@ -1,5 +1,5 @@
 # build binary
-FROM golang:1.18.2 AS builder
+FROM golang:1.19.3 AS builder
 WORKDIR /app
 
 # populate the module cache based on the go.{mod,sum} files.
@@ -13,7 +13,7 @@ RUN make docker-binary
 
 
 # run image
-FROM alpine:3.15.4
+FROM alpine:3.16.2
 
 # ca-certificates
 RUN apk add --no-cache ca-certificates
