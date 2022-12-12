@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/getsentry/sentry-go v0.15.0
 	github.com/go-chi/chi/v5 v5.0.7
-	github.com/google/go-github/v48 v48.1.0
+	github.com/google/go-github/v48 v48.2.0
 	github.com/pkg/errors v0.9.1
 	go.atrox.dev/env v1.1.0
 	golang.org/x/oauth2 v0.2.0
