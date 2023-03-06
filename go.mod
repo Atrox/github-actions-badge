@@ -3,7 +3,7 @@ module go.atrox.dev/github-actions-badge
 go 1.19
 
 require (
-	github.com/getsentry/sentry-go v0.15.0
+	github.com/getsentry/sentry-go v0.19.0
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/google/go-github/v48 v48.1.0
 	github.com/pkg/errors v0.9.1
