@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/getsentry/sentry-go v0.25.0
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi/v5 v5.0.11
 	github.com/google/go-github/v56 v56.0.0
 	github.com/pkg/errors v0.9.1
 	go.atrox.dev/env v1.1.0
